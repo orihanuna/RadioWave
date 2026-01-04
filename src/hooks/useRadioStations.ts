@@ -17,6 +17,28 @@ interface FetchStationsParams {
   offset?: number;
 }
 
+const dedupeAndFilter = (stations: RadioStation[]): RadioStation[] => {
+  const seen = new Set<string>();
+  return stations.filter((station) => {
+    // Must have a favicon
+    if (!station.favicon) return false;
+    
+    // Normalize name for deduplication (lowercase, remove special chars)
+    const normalizedName = station.name.toLowerCase().replace(/[^a-z0-9]/g, '');
+    
+    // Also dedupe by URL
+    const urlKey = station.url_resolved || station.url;
+    
+    if (seen.has(normalizedName) || seen.has(urlKey)) {
+      return false;
+    }
+    
+    seen.add(normalizedName);
+    seen.add(urlKey);
+    return true;
+  });
+};
+
 const fetchStations = async (params: FetchStationsParams): Promise<RadioStation[]> => {
   const server = getRandomServer();
   const { search = '', tag = '', limit = 100, offset = 0 } = params;
@@ -24,7 +46,7 @@ const fetchStations = async (params: FetchStationsParams): Promise<RadioStation[
   let endpoint = `${server}/json/stations/search`;
   
   const queryParams = new URLSearchParams({
-    limit: limit.toString(),
+    limit: '200',
     offset: offset.toString(),
     order: 'clickcount',
     reverse: 'true',
@@ -45,14 +67,15 @@ const fetchStations = async (params: FetchStationsParams): Promise<RadioStation[
     throw new Error('Failed to fetch stations');
   }
 
-  return response.json();
+  const data: RadioStation[] = await response.json();
+  return dedupeAndFilter(data).slice(0, limit);
 };
 
 const fetchIsraeliStations = async (limit = 100): Promise<RadioStation[]> => {
   const server = getRandomServer();
   
   const queryParams = new URLSearchParams({
-    limit: limit.toString(),
+    limit: '200', // Fetch more to account for filtering
     order: 'clickcount',
     reverse: 'true',
     hidebroken: 'true',
@@ -72,7 +95,8 @@ const fetchIsraeliStations = async (limit = 100): Promise<RadioStation[]> => {
     throw new Error('Failed to fetch stations');
   }
 
-  return response.json();
+  const data: RadioStation[] = await response.json();
+  return dedupeAndFilter(data).slice(0, limit);
 };
 
 export const useRadioStations = (params: FetchStationsParams = {}) => {
