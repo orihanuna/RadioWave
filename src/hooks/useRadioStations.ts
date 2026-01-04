@@ -23,6 +23,9 @@ const dedupeAndFilter = (stations: RadioStation[]): RadioStation[] => {
     // Must have a favicon
     if (!station.favicon) return false;
     
+    // Exclude Arabic language stations
+    if (station.language?.toLowerCase().includes('arabic')) return false;
+    
     // Normalize name for deduplication (lowercase, remove special chars)
     const normalizedName = station.name.toLowerCase().replace(/[^a-z0-9]/g, '');
     
