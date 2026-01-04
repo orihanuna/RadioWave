@@ -19,7 +19,7 @@ interface FetchStationsParams {
 
 const fetchStations = async (params: FetchStationsParams): Promise<RadioStation[]> => {
   const server = getRandomServer();
-  const { search = '', country = '', tag = '', limit = 50, offset = 0 } = params;
+  const { search = '', tag = '', limit = 100, offset = 0 } = params;
 
   let endpoint = `${server}/json/stations/search`;
   
@@ -29,10 +29,10 @@ const fetchStations = async (params: FetchStationsParams): Promise<RadioStation[
     order: 'clickcount',
     reverse: 'true',
     hidebroken: 'true',
+    country: 'Israel',
   });
 
   if (search) queryParams.append('name', search);
-  if (country) queryParams.append('country', country);
   if (tag) queryParams.append('tag', tag);
 
   const response = await fetch(`${endpoint}?${queryParams}`, {
@@ -48,11 +48,19 @@ const fetchStations = async (params: FetchStationsParams): Promise<RadioStation[
   return response.json();
 };
 
-const fetchTopStations = async (limit = 50): Promise<RadioStation[]> => {
+const fetchIsraeliStations = async (limit = 100): Promise<RadioStation[]> => {
   const server = getRandomServer();
   
+  const queryParams = new URLSearchParams({
+    limit: limit.toString(),
+    order: 'clickcount',
+    reverse: 'true',
+    hidebroken: 'true',
+    country: 'Israel',
+  });
+
   const response = await fetch(
-    `${server}/json/stations/topclick/${limit}?hidebroken=true`,
+    `${server}/json/stations/search?${queryParams}`,
     {
       headers: {
         'User-Agent': 'RadioApp/1.0',
@@ -61,18 +69,18 @@ const fetchTopStations = async (limit = 50): Promise<RadioStation[]> => {
   );
 
   if (!response.ok) {
-    throw new Error('Failed to fetch top stations');
+    throw new Error('Failed to fetch stations');
   }
 
   return response.json();
 };
 
 export const useRadioStations = (params: FetchStationsParams = {}) => {
-  const hasFilters = params.search || params.country || params.tag;
+  const hasFilters = params.search || params.tag;
 
   return useQuery({
     queryKey: ['stations', params],
-    queryFn: () => hasFilters ? fetchStations(params) : fetchTopStations(params.limit),
+    queryFn: () => hasFilters ? fetchStations(params) : fetchIsraeliStations(params.limit),
     staleTime: 5 * 60 * 1000,
   });
 };
