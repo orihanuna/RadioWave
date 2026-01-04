@@ -21,13 +21,9 @@ export const StationGrid = ({
 }: StationGridProps) => {
   if (isLoading) {
     return (
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-        {Array.from({ length: 18 }).map((_, i) => (
-          <div key={i} className="flex flex-col items-center p-4 rounded-xl bg-card border border-border/50">
-            <Skeleton className="w-20 h-20 rounded-lg mb-3" />
-            <Skeleton className="w-24 h-4 mb-1" />
-            <Skeleton className="w-16 h-3" />
-          </div>
+      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-3">
+        {Array.from({ length: 24 }).map((_, i) => (
+          <Skeleton key={i} className="aspect-square w-full rounded-xl" />
         ))}
       </div>
     );
@@ -43,12 +39,12 @@ export const StationGrid = ({
   }
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+    <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-3">
       {stations.map((station, index) => (
         <div
           key={station.stationuuid}
           className="animate-fade-in"
-          style={{ animationDelay: `${index * 30}ms` }}
+          style={{ animationDelay: `${index * 20}ms` }}
         >
           <StationCard
             station={station}
