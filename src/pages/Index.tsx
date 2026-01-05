@@ -31,6 +31,31 @@ const Index = () => {
   const { favorites, toggleFavorite } = useFavorites();
   const { theme, updateTheme } = useTheme();
 
+  // Get sorted stations with favorites first
+  const sortedStations = useMemo(() => {
+    return [...stations].sort((a, b) => {
+      const aFav = favorites.has(a.stationuuid);
+      const bFav = favorites.has(b.stationuuid);
+      if (aFav && !bFav) return -1;
+      if (!aFav && bFav) return 1;
+      return 0;
+    });
+  }, [stations, favorites]);
+
+  const handlePrevious = () => {
+    if (!currentStation || sortedStations.length === 0) return;
+    const currentIndex = sortedStations.findIndex(s => s.stationuuid === currentStation.stationuuid);
+    const prevIndex = currentIndex <= 0 ? sortedStations.length - 1 : currentIndex - 1;
+    playStation(sortedStations[prevIndex]);
+  };
+
+  const handleNext = () => {
+    if (!currentStation || sortedStations.length === 0) return;
+    const currentIndex = sortedStations.findIndex(s => s.stationuuid === currentStation.stationuuid);
+    const nextIndex = currentIndex >= sortedStations.length - 1 ? 0 : currentIndex + 1;
+    playStation(sortedStations[nextIndex]);
+  };
+
   return (
     <div className="min-h-screen bg-background" dir="rtl">
       <Header theme={theme} onThemeChange={updateTheme} />
@@ -69,6 +94,8 @@ const Index = () => {
         onTogglePlay={togglePlay}
         onVolumeChange={setVolume}
         onStop={stop}
+        onPrevious={handlePrevious}
+        onNext={handleNext}
       />
     </div>
   );

@@ -41,24 +41,28 @@ export const StationCard = ({ station, isPlaying, isLoading, isCurrent, isFavori
       </div>
 
       {/* Station Image */}
-      <div className="absolute inset-0 flex items-center justify-center bg-muted">
+      <div className="absolute inset-0 flex items-center justify-center bg-muted p-2">
         {station.favicon ? (
           <img
             src={station.favicon}
             alt={station.name}
             className="w-full h-full object-cover"
             onError={(e) => {
-              (e.target as HTMLImageElement).style.display = 'none';
-              (e.target as HTMLImageElement).nextElementSibling?.classList.remove('hidden');
+              const img = e.target as HTMLImageElement;
+              img.style.display = 'none';
+              const fallback = img.nextElementSibling as HTMLElement;
+              if (fallback) fallback.classList.remove('hidden');
             }}
           />
         ) : null}
-        <Radio 
+        <span 
           className={cn(
-            "w-10 h-10 text-muted-foreground",
+            "text-xs font-medium text-muted-foreground text-center leading-tight",
             station.favicon && "hidden"
-          )} 
-        />
+          )}
+        >
+          {station.name}
+        </span>
       </div>
       
       {/* Play Overlay */}

@@ -15,12 +15,9 @@ export const Header = ({ theme, onThemeChange }: HeaderProps) => {
           <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
             <Radio className="w-5 h-5 text-primary" />
           </div>
-          <div>
-            <h1 className="text-xl font-display font-bold text-foreground">
-              רדיו<span className="text-primary">ישראלי</span>
-            </h1>
-            <p className="text-xs text-muted-foreground">תחנות רדיו מישראל</p>
-          </div>
+          <h1 className="text-xl font-display font-bold text-foreground">
+            Radio<span className="text-primary">Wave</span>
+          </h1>
         </div>
       </div>
     </header>
