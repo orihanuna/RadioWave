@@ -10,6 +10,15 @@ export const useRadioPlayer = () => {
     isLoading: false,
   });
 
+  // Callbacks for next/previous (set by parent component)
+  const onNextRef = useRef<(() => void) | null>(null);
+  const onPreviousRef = useRef<(() => void) | null>(null);
+
+  const setMediaSessionHandlers = useCallback((onNext: () => void, onPrevious: () => void) => {
+    onNextRef.current = onNext;
+    onPreviousRef.current = onPrevious;
+  }, []);
+
   useEffect(() => {
     audioRef.current = new Audio();
     audioRef.current.volume = playerState.volume;
@@ -37,6 +46,51 @@ export const useRadioPlayer = () => {
       audio.src = '';
     };
   }, []);
+
+  // Update Media Session metadata when station changes
+  useEffect(() => {
+    if ('mediaSession' in navigator && playerState.currentStation) {
+      const station = playerState.currentStation;
+      navigator.mediaSession.metadata = new MediaMetadata({
+        title: station.name,
+        artist: station.country || 'Radio',
+        album: 'RadioWave',
+        artwork: station.favicon ? [
+          { src: station.favicon, sizes: '96x96', type: 'image/png' },
+          { src: station.favicon, sizes: '128x128', type: 'image/png' },
+          { src: station.favicon, sizes: '256x256', type: 'image/png' },
+        ] : []
+      });
+    }
+  }, [playerState.currentStation]);
+
+  // Set up Media Session action handlers
+  useEffect(() => {
+    if ('mediaSession' in navigator) {
+      navigator.mediaSession.setActionHandler('play', () => {
+        audioRef.current?.play();
+      });
+
+      navigator.mediaSession.setActionHandler('pause', () => {
+        audioRef.current?.pause();
+      });
+
+      navigator.mediaSession.setActionHandler('previoustrack', () => {
+        onPreviousRef.current?.();
+      });
+
+      navigator.mediaSession.setActionHandler('nexttrack', () => {
+        onNextRef.current?.();
+      });
+    }
+  }, []);
+
+  // Update playback state for Media Session
+  useEffect(() => {
+    if ('mediaSession' in navigator) {
+      navigator.mediaSession.playbackState = playerState.isPlaying ? 'playing' : 'paused';
+    }
+  }, [playerState.isPlaying]);
 
   const playStation = useCallback((station: RadioStation) => {
     if (!audioRef.current) return;
@@ -84,5 +138,6 @@ export const useRadioPlayer = () => {
     togglePlay,
     setVolume,
     stop,
+    setMediaSessionHandlers,
   };
 };
