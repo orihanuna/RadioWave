@@ -1,5 +1,5 @@
 import { RadioStation } from '@/types/radio';
-import { Play, Pause, Volume2, VolumeX, X, Radio, Loader2 } from 'lucide-react';
+import { Play, Pause, Volume2, VolumeX, X, Radio, Loader2, SkipBack, SkipForward } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { cn } from '@/lib/utils';
@@ -12,6 +12,8 @@ interface PlayerBarProps {
   onTogglePlay: () => void;
   onVolumeChange: (volume: number) => void;
   onStop: () => void;
+  onPrevious: () => void;
+  onNext: () => void;
 }
 
 export const PlayerBar = ({
@@ -22,6 +24,8 @@ export const PlayerBar = ({
   onTogglePlay,
   onVolumeChange,
   onStop,
+  onPrevious,
+  onNext,
 }: PlayerBarProps) => {
   if (!station) return null;
 
@@ -60,7 +64,17 @@ export const PlayerBar = ({
           </div>
 
           {/* Controls */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
+            {/* Previous */}
+            <Button
+              size="icon"
+              variant="ghost"
+              className="w-10 h-10 rounded-full text-foreground hover:bg-secondary"
+              onClick={onPrevious}
+            >
+              <SkipBack className="w-5 h-5" />
+            </Button>
+
             {/* Play/Pause */}
             <Button
               size="icon"
@@ -80,6 +94,16 @@ export const PlayerBar = ({
               ) : (
                 <Play className="w-5 h-5 fill-current ml-0.5" />
               )}
+            </Button>
+
+            {/* Next */}
+            <Button
+              size="icon"
+              variant="ghost"
+              className="w-10 h-10 rounded-full text-foreground hover:bg-secondary"
+              onClick={onNext}
+            >
+              <SkipForward className="w-5 h-5" />
             </Button>
           </div>
 
