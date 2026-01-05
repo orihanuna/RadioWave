@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useRadioStations } from '@/hooks/useRadioStations';
 import { useRadioPlayer } from '@/hooks/useRadioPlayer';
 import { useFavorites } from '@/hooks/useFavorites';
@@ -26,6 +26,7 @@ const Index = () => {
     togglePlay,
     setVolume,
     stop,
+    setMediaSessionHandlers,
   } = useRadioPlayer();
 
   const { favorites, toggleFavorite } = useFavorites();
@@ -42,19 +43,24 @@ const Index = () => {
     });
   }, [stations, favorites]);
 
-  const handlePrevious = () => {
+  const handlePrevious = useCallback(() => {
     if (!currentStation || sortedStations.length === 0) return;
     const currentIndex = sortedStations.findIndex(s => s.stationuuid === currentStation.stationuuid);
     const prevIndex = currentIndex <= 0 ? sortedStations.length - 1 : currentIndex - 1;
     playStation(sortedStations[prevIndex]);
-  };
+  }, [currentStation, sortedStations, playStation]);
 
-  const handleNext = () => {
+  const handleNext = useCallback(() => {
     if (!currentStation || sortedStations.length === 0) return;
     const currentIndex = sortedStations.findIndex(s => s.stationuuid === currentStation.stationuuid);
     const nextIndex = currentIndex >= sortedStations.length - 1 ? 0 : currentIndex + 1;
     playStation(sortedStations[nextIndex]);
-  };
+  }, [currentStation, sortedStations, playStation]);
+
+  // Register media session handlers for lock screen controls
+  useEffect(() => {
+    setMediaSessionHandlers(handleNext, handlePrevious);
+  }, [setMediaSessionHandlers, handleNext, handlePrevious]);
 
   return (
     <div className="min-h-screen bg-background" dir="rtl">
