@@ -27,12 +27,12 @@ export const PlayerBar = ({
 
   return (
     <div className={cn(
-      "fixed bottom-0 left-0 right-0 z-50",
-      "glass border-t border-border/30",
+      "fixed bottom-6 left-4 right-4 z-50",
+      "glass border border-border/30 rounded-2xl",
       "animate-fade-in"
     )}>
       <div className="container mx-auto px-4 py-3">
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4" dir="rtl">
           {/* Station Info */}
           <div className="flex items-center gap-3 flex-1 min-w-0">
             <div className="w-12 h-12 rounded-lg overflow-hidden bg-muted flex items-center justify-center shrink-0">

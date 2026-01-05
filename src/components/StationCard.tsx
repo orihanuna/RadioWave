@@ -1,5 +1,5 @@
 import { RadioStation } from '@/types/radio';
-import { Play, Radio, Loader2 } from 'lucide-react';
+import { Play, Radio, Loader2, Heart } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface StationCardProps {
@@ -7,10 +7,17 @@ interface StationCardProps {
   isPlaying: boolean;
   isLoading: boolean;
   isCurrent: boolean;
+  isFavorite: boolean;
   onPlay: (station: RadioStation) => void;
+  onToggleFavorite: (stationId: string) => void;
 }
 
-export const StationCard = ({ station, isPlaying, isLoading, isCurrent, onPlay }: StationCardProps) => {
+export const StationCard = ({ station, isPlaying, isLoading, isCurrent, isFavorite, onPlay, onToggleFavorite }: StationCardProps) => {
+  const handleFavoriteClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onToggleFavorite(station.stationuuid);
+  };
+
   return (
     <button
       onClick={() => onPlay(station)}
@@ -21,6 +28,18 @@ export const StationCard = ({ station, isPlaying, isLoading, isCurrent, onPlay }
         isCurrent && "border-primary/50 bg-secondary glow-primary"
       )}
     >
+      {/* Favorite Heart */}
+      <div
+        onClick={handleFavoriteClick}
+        className={cn(
+          "absolute top-2 left-2 z-10 w-7 h-7 rounded-full flex items-center justify-center",
+          "bg-background/80 backdrop-blur-sm transition-all hover:scale-110",
+          isFavorite ? "text-red-500" : "text-muted-foreground hover:text-red-400"
+        )}
+      >
+        <Heart className={cn("w-4 h-4", isFavorite && "fill-current")} />
+      </div>
+
       {/* Station Image */}
       <div className="absolute inset-0 flex items-center justify-center bg-muted">
         {station.favicon ? (
