@@ -30,7 +30,7 @@ export const PlayerBar = ({
   if (!station) return null;
 
   return (
-    <div className={c(
+    <div className={cn(
       "fixed bottom-15 left-4 right-4 z-50",
       "glass border border-border/30 rounded-2xl",
       "animate-fade-in"
